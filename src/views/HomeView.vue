@@ -1,16 +1,48 @@
 <script setup>
   import carsData from "../data.json"
-  import {ref} from "vue"
+  import {ref, watch, onMounted} from "vue"
+  import {useRouter, useRoute} from "vue-router"
 
+  const router = useRouter()
   const cars = ref(carsData)
+  const make = ref("")
+  const route = useRoute()
+
+  watch(make, () => {
+    if(make.value){ 
+      if(make.value === "All")  cars.value = carsData
+      else {
+        cars.value = carsData.filter(c => c.make === make.value)
+      }
+    }
+  })
+
+  const handleChange = () => {
+    router.push({query: {make: make.value}})  //in order to send link to others
+  }
+
+  onMounted(() => {
+    make.value = route.query.make || ""
+  })
 </script>
 
 <template>
   <main class="container">
     
     <h1>Our Cars</h1>
+    <select @change="handleChange" v-model="make">
+      <option value="All">All</option>
+      <option value="Chevrolet">Chevy</option>
+      <option value="Porsche">Porsche</option>
+      <option value="Audi">Audi</option> 
+    </select>
     <div class="cards">
-      <div v-for="car in cars" :key="car.id" class="card">
+      <div 
+        v-for="car in cars" 
+        :key="car.id" 
+        class="card"
+        @click="router.push(`/car/${car.id}`)"
+      >
         <h1>{{ car.make }}</h1>
         <p>${{ car.price }}</p>
       </div>

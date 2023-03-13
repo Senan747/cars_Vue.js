@@ -1,16 +1,29 @@
 <script setup>
-  import {useRoute} from 'vue-router'
+  import {useRoute, RouterView} from 'vue-router'
   import {ref, onBeforeMount} from "vue"
   import cars from "../data.json"
-  const route = useRoute()
 
-  onBeforeMount(() => {
-    const carData = cars.find(c => c.id === parseInt(id))
-  })
+  const car = ref(null)
+  const route = useRoute()
   const {id} = route.params
+  onBeforeMount(() => {
+    car.value = cars.find(c => c.id === parseInt(id))
+  })
+ 
 </script>
 <template>
     <div class="container">
-        <h1>The car</h1>
+        <div v-if="car">
+          <h1>The car</h1>
+          <p>Make: {{ car.make }}</p>
+          <p>Body: {{ car.body }}</p>
+          <p>Price: {{ car.price }}</p>
+          <p>Year: {{ car.year }}</p>
+          <RouterView />
+        </div>
+        
+        <div v-else>
+          <h1>Car Not Found</h1>
+        </div>
     </div>
 </template>
